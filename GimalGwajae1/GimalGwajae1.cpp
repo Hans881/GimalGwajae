@@ -11,7 +11,7 @@ void startGame() {
 
 	enterScene(scene1);
 }
-
+//확인
 void mouseCallback(ObjectID object, int x, int y, MouseAction action) {
 	if (object == endButton) {
 		endGame();
