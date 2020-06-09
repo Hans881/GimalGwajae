@@ -7,7 +7,7 @@ ObjectID startButton, endButton, playButton;
 
 void startGame() {
 	hideObject(startButton);
-	ShowObject(endButton);
+	hideObject(endButton);
 
 	enterScene(scene1);
 }
