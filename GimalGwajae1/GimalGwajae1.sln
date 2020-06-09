@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GimalGwajae1", "GimalGwajae1.vcxproj", "{F86303BE-246E-4D98-A6C6-5F89658D7D83}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{A3411AE9-7C23-45B9-973C-6294B3461292}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\project_game2\project_game2.cpp = ..\..\project_game2\project_game2.cpp
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
