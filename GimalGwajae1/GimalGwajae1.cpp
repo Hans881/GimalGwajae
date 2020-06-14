@@ -459,4 +459,5 @@ int main() {
 	int count = 0;
 	
 	startGame(scene0);
+	//제출확인
 }
