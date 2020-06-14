@@ -11,9 +11,9 @@
 #define randomspeed 0.8f
 
 //장면 생성
-SceneID scene0, scene1;
+SceneID scene0, scene1,scenewin,scenefail,scenehow;
 //배경, 터렛 오브젝트,탄약 갯수 오브젝트 생성
-ObjectID startButton, endButton, playButton, background, turret[2][3], turretimg, ammo[2][3], bullet[2][3][3]
+ObjectID startButton, endButton, howButton, playButton, background, turret[2][3], turretimg, ammo[2][3], bullet[2][3][3]
 , castle
 //좀비 오브젝트 생성
 , zombie[4][3];
@@ -25,7 +25,9 @@ int bulletnum[2][3];
 //터렛 이미지가 생성될 랜덤 x, y좌표
 int x_turret, y_turret,
 //터렛이 짝수이면 보이고, 홀수이면 안보임
-randomkey;
+randomkey,
+//승리 카운트
+count;
 //sprintf를 위한
 char ammoimg[10];
 
@@ -46,15 +48,29 @@ float x_bullet[2][3][3];
 float x_zombie[4][3];
 
 
+//좀비 생성
+void createzombie() {
+	for (int i = 3; i >= 0; i--) {
+		for (int k = 2; k >= 0; k--) {
+			locateObject(zombie[i][k], scene1, 1290 + i * 190, 15 + k * 90);
+			x_zombie[i][k] = 1290 + i * 190;
+			showObject(zombie[i][k]);
+			setTimer(timerzombie[i][k], bulletmove);
+			startTimer(timerzombie[i][k]);
+		}
+
+	}
+
+}
 
 
 //시작함수 
 void startGame() {
 	hideObject(startButton);
 	hideObject(endButton);
-
+	
 	enterScene(scene1);
-
+	createzombie();
 }
 
 //총알
@@ -70,20 +86,6 @@ void moveObject(ObjectID object, float* x, float y, float step_x) {
 
 }
 
-//좀비 생성
-void createzombie() {
-	for (int i = 3; i >= 0; i--) {
-		for (int k = 2; k >= 0; k--) {
-			locateObject(zombie[i][k], scene1, 1290 + i * 190, 15 + k * 90);
-			x_zombie[i][k] = 1290 + i * 190;
-			showObject(zombie[i][k]);
-			setTimer(timerzombie[i][k], bulletmove);
-			startTimer(timerzombie[i][k]);
-		}
-
-	}
-
-}
 
 
 
@@ -111,6 +113,12 @@ void mouseCallback(ObjectID object, int x, int y, MouseAction action) {
 	else if (object == startButton) {
 		startGame();
 		startTimer(timerframe);
+	}
+	else if (object == howButton) {
+		enterScene(scenehow);
+		locateObject(startButton, scenehow, 590, 60);
+		showObject(startButton);
+
 	}
 
 	//배경화면의 특정 지점 클릭시 그 지점에 숨겨져있던 터렛이 보임
@@ -175,14 +183,15 @@ void timerCallback(TimerID timer) {
 						//만약 좀비와 총알이 닿으면
 						if (x_zombie[j][k] <= x_bullet[i][k][t] + 90 && x_zombie[j][k] + 20 >= x_bullet[i][k][t] + 90) {
 							//좀비의 x좌표를 1500으로 옮겨 주어 닿지 않게한다
-							x_zombie[j][k] = 1800;
+							
 							//총알의 x좌표를 옮겨 재장전 조건에 맞게한다.
 							x_bullet[i][k][t] = 1500;
 							stopTimer(timerzombie[j][k]);
+							x_zombie[j][k] = 1800;
 							stopTimer(timerbullet[i][k][t]);
 							locateObject(zombie[j][k], scene1, -200, -200);
 							locateObject(bullet[i][k][t], scene1, -200, -200);
-
+							 
 
 						}
 					}
@@ -216,6 +225,29 @@ void timerCallback(TimerID timer) {
 				}
 				setTimer(timerframe, 0.01f);
 				startTimer(timerframe);
+			}
+		}
+		//만약 좀비의 x좌표가 음수가 된다면 
+		count = 0;
+		for (int i = 0; i < 4; i++) {
+			for (int k = 0; k < 3; k++) {
+				//실패..
+				if (x_zombie[i][k] < 0) {
+					locateObject(endButton, scenefail , 590, 250);
+					showObject(endButton);
+					enterScene(scenefail);
+				}
+				//승리조건 좀비 12마리가 모두 사망시 승리!
+				else if (x_zombie[i][k] == 1800) {
+					count++;
+					if (count == 12) {
+						locateObject(endButton, scenewin, 590, 250);
+						showObject(endButton);
+						enterScene(scenewin);
+
+					}
+
+				}
 			}
 		}
 	}
@@ -334,9 +366,10 @@ int main() {
 	setTimerCallback(timerCallback);
 	//장면 생성
 	scene0 = createScene("대기화면", "images/배경1.jpg");
-	scene1 = createScene("게임시작", "images/background5.png");
-
-
+	scene1 = createScene("좀비를 잡자!!", "images/background5.png");
+	scenewin = createScene("좀비를 잡았다!!", "images/cleargamepage.png");
+	scenefail= createScene("좀비를 못잡았다..","images/endgamepage.png");
+	scenehow = createScene("좀비를 어떻게 잡을까?", "images/explain.png");
 
 
 	//배경화면 이미지에 마우스 콜백 적용 위해 배경화면 오브젝트 처리
@@ -356,8 +389,12 @@ int main() {
 	showObject(startButton);
 
 	endButton = createObject("images/end.png");
-	locateObject(endButton, scene0, 590, 250);
+	locateObject(endButton, scene0, 590, 240);
 	showObject(endButton);
+	
+	howButton = createObject("images/howbutton.png");
+	locateObject(howButton, scene0, 590, 180);
+	showObject(howButton);
 	//[x칸][y칸]
 	//터렛 생성후 각 칸에 배치 6개
 	for (int i = 1; i >= 0; i--) {
@@ -387,7 +424,7 @@ int main() {
 
 
 				//각 총알의 x좌표 값 저장
-
+				x_bullet[i][k][t] = 3000;
 
 
 				//총알마다 타이머 생성
@@ -407,7 +444,8 @@ int main() {
 
 
 	//터렛 클릭용 이미지 생성
-	turretimg = createObject("images/turret1.png");
+	turretimg = createObject("images/turretimg.png");
+	scaleObject(turretimg, 2.f);
 	locateObject(turretimg, scene1, 500, 400);
 	showObject(turretimg);
 	//본진 생성
@@ -418,7 +456,7 @@ int main() {
 	timerframe = createTimer(0.01f);
 	//랜덤 타이머 생성
 	timerrandom = createTimer(0.5f);
-
-	createzombie();
+	int count = 0;
+	
 	startGame(scene0);
 }
