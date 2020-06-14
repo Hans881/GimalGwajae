@@ -19,4 +19,4 @@
 [youtube] [0108]참조  
 
 
-[1]: https://youtu.be/kA_4TT28394
+[0108]: https://youtu.be/kA_4TT28394
