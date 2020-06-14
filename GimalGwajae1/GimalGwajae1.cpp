@@ -365,7 +365,7 @@ int main() {
 	setObjectCallback(objectCallback);
 	setTimerCallback(timerCallback);
 	//장면 생성
-	scene0 = createScene("대기화면", "images/배경1.jpg");
+	scene0 = createScene("좀비를 잡자!", "images/배경1.jpg");
 	scene1 = createScene("좀비를 잡자!!", "images/background5.png");
 	scenewin = createScene("좀비를 잡았다!!", "images/cleargamepage.png");
 	scenefail= createScene("좀비를 못잡았다..","images/endgamepage.png");
